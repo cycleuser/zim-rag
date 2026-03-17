@@ -1,0 +1,20 @@
+# PyPI 包清单
+include *.md
+include *.txt
+include LICENSE
+include MANIFEST.in
+include pyproject.toml
+include requirements.txt
+recursive-include zimrag *.py
+recursive-include zimrag/templates *.html
+recursive-include zimrag/data *.json
+recursive-include tests *.py
+graft zimrag
+graft tests
+prune __pycache__
+prune *.pyc
+prune .ruff_cache
+prune .pytest_cache
+prune dist
+prune build
+prune *.egg-info

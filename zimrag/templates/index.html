@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZIM-RAG 知识库问答系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .input-section {
+            margin-bottom: 20px;
+        }
+        
+        .input-section label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #555;
+        }
+        
+        #question {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        #question:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .control-group label {
+            font-weight: 500;
+            color: #555;
+        }
+        
+        select {
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+        
+        #ask-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+        
+        #ask-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        #ask-btn:active {
+            transform: translateY(0);
+        }
+        
+        #ask-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .answer-section {
+            margin-top: 20px;
+        }
+        
+        .answer-section h3 {
+            color: #555;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        #answer {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            min-height: 100px;
+            white-space: pre-wrap;
+            line-height: 1.8;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+        
+        .footer a {
+            color: white;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 ZIM-RAG</h1>
+            <p>本地知识库智能问答系统</p>
+        </div>
+        
+        <div class="card">
+            <div class="input-section">
+                <label for="question">请输入您的问题：</label>
+                <textarea 
+                    id="question" 
+                    rows="4" 
+                    placeholder="例如：量子力学的基本原理是什么？"
+                ></textarea>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label for="model">模型:</label>
+                    <select id="model">
+                        <option value="llama3">llama3</option>
+                        <option value="mistral">mistral</option>
+                        <option value="gemma">gemma</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="context-limit">上下文:</label>
+                    <select id="context-limit">
+                        <option value="3">3 条</option>
+                        <option value="5" selected>5 条</option>
+                        <option value="10">10 条</option>
+                        <option value="15">15 条</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button id="ask-btn">🚀 开始提问</button>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>正在思考中...</p>
+            </div>
+            
+            <div class="answer-section">
+                <h3>📝 回答</h3>
+                <div id="answer">答案将显示在这里...</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>📊 系统状态</h3>
+            <div class="stats" id="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-zims">-</div>
+                    <div class="stat-label">ZIM 文件</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-articles">-</div>
+                    <div class="stat-label">索引文章</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-model">-</div>
+                    <div class="stat-label">当前模型</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-status">-</div>
+                    <div class="stat-label">服务状态</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>ZIM-RAG v1.0.0 | 
+               <a href="https://github.com/zim-rag/zim-rag" target="_blank">GitHub</a> | 
+               GPL-3.0 License
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = '';
+        
+        // 加载系统状态
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/api/stats`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('stat-zims').textContent = 
+                        data.data.zim_files?.loaded_files || 0;
+                    document.getElementById('stat-articles').textContent = 
+                        (data.data.zim_files?.total_articles || 0).toLocaleString();
+                    document.getElementById('stat-model').textContent = 
+                        data.data.model || 'N/A';
+                    document.getElementById('stat-status').textContent = 
+                        data.data.ollama_healthy ? '✅ 正常' : '❌ 异常';
+                }
+            } catch (error) {
+                console.error('加载统计失败:', error);
+            }
+        }
+        
+        // 加载模型列表
+        async function loadModels() {
+            try {
+                const response = await fetch(`${API_BASE}/api/models`);
+                const data = await response.json();
+                
+                const select = document.getElementById('model');
+                select.innerHTML = '';
+                
+                if (data.models && data.models.length > 0) {
+                    data.models.forEach(model => {
+                        const option = document.createElement('option');
+                        option.value = model;
+                        option.textContent = model;
+                        select.appendChild(option);
+                    });
+                } else {
+                    const option = document.createElement('option');
+                    option.value = 'llama3';
+                    option.textContent = 'llama3';
+                    select.appendChild(option);
+                }
+            } catch (error) {
+                console.error('加载模型失败:', error);
+            }
+        }
+        
+        // 提问功能
+        async function askQuestion() {
+            const question = document.getElementById('question').value.trim();
+            if (!question) {
+                alert('请输入问题');
+                return;
+            }
+            
+            const model = document.getElementById('model').value;
+            const contextLimit = parseInt(document.getElementById('context-limit').value);
+            
+            const btn = document.getElementById('ask-btn');
+            const loading = document.getElementById('loading');
+            const answerDiv = document.getElementById('answer');
+            
+            btn.disabled = true;
+            loading.classList.add('active');
+            answerDiv.textContent = '';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/ask`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        question: question,
+                        context_limit: contextLimit,
+                        model: model
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    answerDiv.textContent = data.data.answer;
+                } else {
+                    answerDiv.textContent = `错误：${data.error}`;
+                }
+            } catch (error) {
+                answerDiv.textContent = `请求失败：${error.message}`;
+            } finally {
+                btn.disabled = false;
+                loading.classList.remove('active');
+            }
+        }
+        
+        // 事件绑定
+        document.getElementById('ask-btn').addEventListener('click', askQuestion);
+        
+        document.getElementById('question').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                askQuestion();
+            }
+        });
+        
+        // 页面加载时初始化
+        loadStats();
+        loadModels();
+        
+        // 每 30 秒刷新一次状态
+        setInterval(loadStats, 30000);
+    </script>
+</body>
+</html>

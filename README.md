@@ -188,7 +188,7 @@ zim-rag --version
 
 ```bash
 # 克隆仓库
-git clone https://github.com/zim-rag/zim-rag.git
+git clone https://github.com/cycleuser/zim-rag.git
 cd zim-rag
 
 # 创建虚拟环境并激活
@@ -462,7 +462,7 @@ tail -f ~/.zim_rag/logs/app.log
 ### 开发环境设置
 
 ```bash
-git clone https://github.com/zim-rag/zim-rag.git
+git clone https://github.com/cycleuser/zim-rag.git
 cd zim-rag
 pip install -e ".[dev]"
 ```
@@ -485,8 +485,67 @@ ruff check zim_rag/ tests/
 
 ## 联系方式
 
-- 项目主页：https://github.com/zim-rag/zim-rag
-- 问题反馈：https://github.com/zim-rag/zim-rag/issues
+- 项目主页：https://github.com/cycleuser/zim-rag
+- 问题反馈：https://github.com/cycleuser/zim-rag/issues
+
+---
+
+## Project Homepage
+
+**GitHub Repository:** https://github.com/cycleuser/zim-rag
+
+**PyPI Package:** https://pypi.org/project/zim-rag/
+
+---
+
+# ZIM-RAG: Local Knowledge Base Q&A System
+
+A Retrieval-Augmented Generation (RAG) system based on ZIM files and local large language models (Ollama).
+
+## Background
+
+With the popularity of offline knowledge bases (such as Wikipedia ZIM files), users need to access and query this knowledge in offline environments. Traditional keyword search cannot meet complex Q&A needs. This project combines local large language models (Ollama) and RAG technology to achieve an intelligent Q&A system based on local knowledge bases.
+
+## Installation
+
+```bash
+pip install zim-rag
+```
+
+## Quick Start
+
+```bash
+# Build index from ZIM files
+zim-rag index /path/to/wiki.zim
+
+# Ask a question
+zim-rag ask "What is quantum mechanics?"
+
+# Start GUI
+zim-rag gui
+
+# Start Web service
+zim-rag web --port 5000
+```
+
+## Features
+
+- **ZIM File Support**: Parse and index offline ZIM knowledge bases
+- **Local LLM**: Powered by Ollama for privacy-preserving inference
+- **Semantic Search**: Vector-based retrieval with ChromaDB
+- **Multi-interface**: CLI, GUI (PySide6), and Web (Flask)
+- **Source Attribution**: All answers include reference sources
+
+## Requirements
+
+- Python 3.10+
+- Ollama (https://ollama.ai)
+- 8GB+ RAM (16GB recommended)
+- 10GB+ storage space
+
+## License
+
+GPL-3.0 License
 - 电子邮件：zim-rag@example.com
 
 ## 致谢

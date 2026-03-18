@@ -1,0 +1,52 @@
+[
+  {
+    "zh": "什么是人工智能？",
+    "en": "What is artificial intelligence?",
+    "category": "technology"
+  },
+  {
+    "zh": "Python 是什么编程语言？",
+    "en": "What is Python programming language?",
+    "category": "programming"
+  },
+  {
+    "zh": "太阳系有哪些行星？",
+    "en": "What planets are in the Solar System?",
+    "category": "astronomy"
+  },
+  {
+    "zh": "DNA 是什么？",
+    "en": "What is DNA?",
+    "category": "biology"
+  },
+  {
+    "zh": "谁发明了电话？",
+    "en": "Who invented the telephone?",
+    "category": "history"
+  },
+  {
+    "zh": "什么是机器学习？",
+    "en": "What is machine learning?",
+    "category": "technology"
+  },
+  {
+    "zh": "地球的直径是多少？",
+    "en": "What is the diameter of Earth?",
+    "category": "astronomy"
+  },
+  {
+    "zh": "水的化学式是什么？",
+    "en": "What is the chemical formula of water?",
+    "category": "chemistry"
+  },
+  {
+    "zh": "牛顿三大定律是什么？",
+    "en": "What are Newton's three laws of motion?",
+    "category": "physics"
+  },
+  {
+    "zh": "什么是气候变化？",
+    "en": "What is climate change?",
+    "category": "environment"
+  }
+]
